@@ -1,18 +1,18 @@
 alter database kaironst set DateStyle to 'ISO, DMY';
 
-drop table dimAno;
-drop table dimMes;
-drop table dimDia;
-drop table dimCliente;
-drop table dimProduto;
-drop table dimUf;
-drop table dimCidade;
-drop table dimEndereco;
-drop table dimLoja;
-drop table dimFuncionario_cargo;
-drop table dimFornecedor;
-drop table fadoVenda;
-drop table fatoCompra;
+drop table if exists dimAno cascade;
+drop table if exists dimMes cascade;
+drop table if exists dimDia cascade;
+drop table if exists dimCliente cascade;
+drop table if exists dimProduto cascade;
+drop table if exists dimUf cascade;
+drop table if exists dimCidade cascade;
+drop table if exists dimEndereco cascade;
+drop table if exists dimLoja cascade;
+drop table if exists dimFuncionario_cargo cascade;
+drop table if exists dimFornecedor cascade;
+drop table if exists fatoVenda cascade;
+drop table if exists fatoCompra cascade;
 
 
 --inicialização do projeto sql em postgres do banco de dados em modelo dimenional para a loja de varejo
