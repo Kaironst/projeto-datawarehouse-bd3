@@ -1,5 +1,21 @@
---inicialização do projeto sql em postgres do banco de dados em modelo dimenional para a loja de varejo
+alter database kaironst set DateStyle to 'ISO, DMY';
 
+drop table dimAno;
+drop table dimMes;
+drop table dimDia;
+drop table dimCliente;
+drop table dimProduto;
+drop table dimUf;
+drop table dimCidade;
+drop table dimEndereco;
+drop table dimLoja;
+drop table dimFuncionario_cargo;
+drop table dimFornecedor;
+drop table fadoVenda;
+drop table fatoCompra;
+
+
+--inicialização do projeto sql em postgres do banco de dados em modelo dimenional para a loja de varejo
 --declaração das dimensões
 
 create table dimAno (
