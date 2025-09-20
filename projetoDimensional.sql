@@ -1,4 +1,4 @@
-alter database kaironst set DateStyle to 'ISO, DMY';
+-- alter database kaironst set DateStyle to 'ISO, DMY';
 
 drop table if exists dimAno cascade;
 drop table if exists dimMes cascade;
@@ -20,21 +20,24 @@ drop table if exists fatoCompra cascade;
 
 create table dimAno (
 	id serial primary key,
-	ano int
+	ano int, 
+	constraint ukDataAno unique(ano)
 );
 
 create table dimMes (
 	id serial primary key,
 	mes int,
 	ano int, --fk
-	constraint fkanomes foreign key (ano) references dimAno(id)
+	constraint fkanomes foreign key (ano) references dimAno(id),
+	constraint ukDataMes unique(mes,ano)
 );
 
 create table dimDia (
 	id serial primary key,
 	dia int,
 	mes int, --fk
-	constraint fkmesdia foreign key (mes) references dimMes(id)
+	constraint fkmesdia foreign key (mes) references dimMes(id),
+	constraint ukDataDia unique (dia,mes)
 );
 
 create table dimCliente (

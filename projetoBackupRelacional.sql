@@ -8,7 +8,7 @@ rollback;
 -- DB... SQLINES DEMO ***
 
 
-alter database kaironst set DateStyle to 'ISO, DMY';
+-- alter database kaironst set DateStyle to 'ISO, DMY';
 
 drop table if exists tb010_clientes_antigos ;
 
