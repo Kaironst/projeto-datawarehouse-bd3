@@ -19,13 +19,13 @@ drop table if exists fatoCompra cascade;
 --declaração das dimensões
 
 create table dimAno (
-	id serial primary key,
+	id bigserial primary key,
 	ano int, 
 	constraint ukDataAno unique(ano)
 );
 
 create table dimMes (
-	id serial primary key,
+	id bigserial primary key,
 	mes int,
 	ano int, --fk
 	constraint fkanomes foreign key (ano) references dimAno(id),
@@ -33,7 +33,7 @@ create table dimMes (
 );
 
 create table dimDia (
-	id serial primary key,
+	id bigserial primary key,
 	dia int,
 	mes int, --fk
 	constraint fkmesdia foreign key (mes) references dimMes(id),
@@ -41,18 +41,23 @@ create table dimDia (
 );
 
 create table dimCliente (
-	id serial primary key,
+	id bigserial primary key,
 	cpf numeric(15), --  não sei se mudo isso ou não graças ao backup, mas o cpf aqui é numeric e o cpf do funcionário é varchar(17)
+	nome varchar(255),
 	fone_residencial varchar(255),
 	fone_celular varchar(255)
 );
 
 create table dimProduto (
-	id serial primary key,
+	id bigserial primary key,
+	primary_key_origem bigint,
 	descricao varchar(255),
+
+	tipo varchar(50),
 	detalhamento varchar(255),
+	valor_sugerido real,
 	
-	unidade_media varchar(255),
+	unidade_medida varchar(255),
 	num_lote varchar(255),
 	data_vencimento date,
 
@@ -65,20 +70,21 @@ create table dimProduto (
 );
 
 create table dimUf (
-	id serial primary key,
-	nome_estado varchar(255),
-	sigla_uf varchar(2)
+	id bigserial primary key,
+	nome_estado varchar(255) unique,
+	sigla_uf varchar(2) unique
 );
 
 create table dimCidade (
-	id serial primary key,
+	id bigserial primary key,
 	nome_cidade varchar(255),
 	uf int, --fk
-	constraint fkuf foreign key (uf) references dimUf (id)
+	constraint fkuf foreign key (uf) references dimUf (id),
+	constraint ukLocalCidade unique(nome_cidade,uf)
 );
 
 create table dimEndereco (
-	id serial primary key,
+	id bigserial primary key,
 	nome_rua varchar(255),
 	numero_rua varchar(10),
 	complemento varchar(255),
@@ -90,7 +96,7 @@ create table dimEndereco (
 );
 
 create table dimLoja (
-	id serial primary key,
+	id bigserial primary key,
 	matriz numeric(10),
 	cnpj_loja varchar(20),
 	inscricao_estadual varchar(20),
@@ -99,7 +105,7 @@ create table dimLoja (
 );
 
 create table dimFuncionario_cargo (
-	id serial primary key,
+	id bigserial primary key,
 	matricula int,
 	nome_completo varchar(255),
 	data_nascimento date,
@@ -117,7 +123,8 @@ create table dimFuncionario_cargo (
 );
 
 create table dimFornecedor (
-	id serial primary key,
+	id bigserial primary key,
+	primary_key_origem bigint,
 	razao_social varchar(255),
 	nome_fantasia varchar(255),
 	fone varchar(15),
