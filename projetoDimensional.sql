@@ -5,14 +5,9 @@ drop table if exists dimMes cascade;
 drop table if exists dimDia cascade;
 drop table if exists dimCliente cascade;
 drop table if exists dimProduto cascade;
-drop table if exists dimUf cascade;
-drop table if exists dimCidade cascade;
-drop table if exists dimEndereco cascade;
-drop table if exists dimLoja cascade;
-drop table if exists dimFuncionario_cargo cascade;
-drop table if exists dimFornecedor cascade;
+drop table if exists dimEndereco_loja cascade;
+drop table if exists dimFuncionario cascade;
 drop table if exists fatoVenda cascade;
-drop table if exists fatoCompra cascade;
 
 
 --inicialização do projeto sql em postgres do banco de dados em modelo dimenional para a loja de varejo
@@ -27,7 +22,7 @@ create table dimAno (
 create table dimMes (
 	id bigserial primary key,
 	mes int,
-	ano int, --fk
+	ano bigint, --fk
 	constraint fkanomes foreign key (ano) references dimAno(id),
 	constraint ukDataMes unique(mes,ano)
 );
@@ -35,17 +30,15 @@ create table dimMes (
 create table dimDia (
 	id bigserial primary key,
 	dia int,
-	mes int, --fk
+	mes bigint, --fk
 	constraint fkmesdia foreign key (mes) references dimMes(id),
 	constraint ukDataDia unique (dia,mes)
 );
 
 create table dimCliente (
 	id bigserial primary key,
-	cpf numeric(15), --  não sei se mudo isso ou não graças ao backup, mas o cpf aqui é numeric e o cpf do funcionário é varchar(17)
-	nome varchar(255),
-	fone_residencial varchar(255),
-	fone_celular varchar(255)
+	cpf numeric(15),
+	nome varchar(255)
 );
 
 create table dimProduto (
@@ -55,107 +48,42 @@ create table dimProduto (
 
 	tipo varchar(50),
 	detalhamento varchar(255),
-	valor_sugerido real,
-	
-	unidade_medida varchar(255),
-	num_lote varchar(255),
-	data_vencimento date,
-
-	tensao varchar(255),
-	nivel_consumo_procel char(1),
-
-	sexo char(1),
-	tamanho varchar(255),
-	numeracao int
+	desc_categoria varchar(255)
 );
 
-create table dimUf (
-	id bigserial primary key,
-	nome_estado varchar(255) unique,
-	sigla_uf varchar(2) unique
-);
-
-create table dimCidade (
-	id bigserial primary key,
-	nome_cidade varchar(255),
-	uf int, --fk
-	constraint fkuf foreign key (uf) references dimUf (id),
-	constraint ukLocalCidade unique(nome_cidade,uf)
-);
-
-create table dimEndereco (
-	id bigserial primary key,
-	nome_rua varchar(255),
-	numero_rua varchar(10),
-	complemento varchar(255),
-	ponto_referencia varchar(255),
-	bairro varchar(255),
-	cep varchar(15),
-	cidade int, --fk
-	constraint fkcidade foreign key (cidade) references dimCidade (id)
-);
-
-create table dimLoja (
+create table dimEndereco_loja (
 	id bigserial primary key,
 	matriz numeric(10),
 	cnpj_loja varchar(20),
-	inscricao_estadual varchar(20),
-	endereco int, --fk
-	constraint fkenderecoloja foreign key (endereco) references dimEndereco(id)
+	nome_rua varchar(255),
+	numero_rua varchar(10),
+	bairro varchar(255),
+	cep varchar(15),
+	nome_cidade varchar(255),
+	sigla_uf varchar(255)
 );
 
-create table dimFuncionario_cargo (
+create table dimFuncionario (
 	id bigserial primary key,
 	matricula int,
 	nome_completo varchar(255),
-	data_nascimento date,
-	cpf varchar(17),
-	rg varchar(15),
-	status varchar(20),
-	data_contratacao date,
-	data_demissao date,
-	valor_cargo numeric(10,2),
-	perc_comissao_cargo numeric(5,2),
-	loja int, --fk
-	endereco int, --fk
-	constraint fkloja foreign key (loja) references dimLoja(id),
-	constraint fkenderecofuncionario foreign key (endereco) references dimEndereco(id)
+	loja bigint, --fk
+	constraint fkFuncionarioLoja foreign key (loja) references dimEndereco_loja(id)
 );
-
-create table dimFornecedor (
-	id bigserial primary key,
-	primary_key_origem bigint,
-	razao_social varchar(255),
-	nome_fantasia varchar(255),
-	fone varchar(15),
-	endereco int, --fk
-	constraint fkenderecofornecedor foreign key (endereco) references dimEndereco(id)
-);
-
 
 --declaração dos fatos
 
 create table fatoVenda (
 	quantidade int,
 	valor int,
-	fkCliente int,
-	fkFuncionario int,
-	fkDia int,
-	fkProduto int,
+	fkCliente bigint,
+	fkFuncionario bigint,
+	fkLoja bigint,
+	fkDia bigint,
+	fkProduto bigint,
 	constraint fkclientevenda foreign key (fkCliente) references dimCliente(id),
-	constraint fkfuncionariovenda foreign key (fkFuncionario) references dimFuncionario_cargo(id),
+	constraint fkfuncionariovenda foreign key (fkFuncionario) references dimFuncionario(id),
 	constraint fkdiavenda foreign key (fkDia) references dimDia(id),
+	constraint fklojavenda foreign key (fkLoja) references dimEndereco_loja(id),
 	constraint fkprodutovenda foreign key (fkProduto) references dimProduto(id)
 );
-
-create table fatoCompra (
-	quantidade int,
-	valor int,
-	fkFornecedor int,
-	fkDia int,
-	fkProduto int,
-	constraint fkfornecedorcompra foreign key (fkFornecedor) references dimFornecedor(id),
-	constraint fkdiacompra foreign key (fkDia) references dimDia(id),
-	constraint fkprodutocompra foreign key (fkProduto) references dimProduto(id)
-);
-
